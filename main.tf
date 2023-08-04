@@ -98,7 +98,7 @@ resource "kubernetes_stateful_set" "angular" {
 
 resource "kubernetes_manifest" "angular_service" {
   depends_on = [
-    kubernetes_namespace.default
+    kubernetes_namespace.default,
   ]
   manifest = yamldecode(templatefile(
     "${path.module}/manifests/angular-service.tpl.yaml",
@@ -110,7 +110,7 @@ resource "kubernetes_manifest" "angular_service" {
 
 resource "kubernetes_manifest" "angular_ingress" {
   depends_on = [
-    kubernetes_namespace.default
+    kubernetes_namespace.default,
   ]
   manifest = yamldecode(templatefile(
     "${path.module}/manifests/angular-ingress.tpl.yaml",
