@@ -10,6 +10,7 @@ pipeline {
             choices: [
                 'default',
                 'update_scm',
+                'delete_namespace',
                 'build_image',
                 'main_plan',
                 'main_refresh',
@@ -72,6 +73,22 @@ pipeline {
                             aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
                         """
                     }
+                }
+            }
+        }
+
+        stage('Delete Namespace') {
+            when {
+                expression {
+                    params.action == 'delete_namespace'
+                }
+            }
+            steps {
+                script {
+                    sh(returnStdout: false, returnStatus:true, script: """#!/bin/bash
+                        terraform plan -destroy namespace.tf -input=false -lock=false -out tfplan && \
+                        terraform show -no-color tfplan > tfplan.txt
+                    """.stripIndent())
                 }
             }
         }
@@ -163,6 +180,7 @@ pipeline {
                 expression {
                     params.action == 'default' ||
                     params.action == 'main_plan' ||
+                    params.action == 'delete_namespace' ||
                     params.action == 'main_refresh' ||
                     params.action == 'main_destroy'
                 }
@@ -185,6 +203,7 @@ pipeline {
                     params.action == 'default' ||
                     params.action == 'main_plan' ||
                     params.action == 'main_refresh' ||
+                    params.action == 'delete_namespace' ||
                     params.action == 'main_destroy'
                 }
             }

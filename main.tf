@@ -19,12 +19,6 @@ provider "kubernetes" {
 provider "aws" {
 }
 
-resource "kubernetes_namespace" "default" {
-  metadata {
-    name = var.namespace
-  }
-}
-
 resource "kubernetes_manifest" "angular-pvc" {
   depends_on = [
     kubernetes_namespace.default
