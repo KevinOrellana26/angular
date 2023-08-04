@@ -46,7 +46,7 @@ pipeline {
 
         stage('Get AWS Credentials') {
             when {
-                expressions {
+                expression {
                     params.action == 'default' ||
                     params.action == 'update_scm' ||
                     params.action == 'build_image' ||
@@ -78,7 +78,7 @@ pipeline {
 
         stage('Build Image'){
             when {
-                expressions {
+                expression {
                     params.action == 'pull_images'
                 }
             }
@@ -91,7 +91,7 @@ pipeline {
 
         stage('Main Init') {
             when {
-                expressions {
+                expression {
                     params.action == 'default' ||
                     params.action == 'update_scm' ||
                     params.action == 'build_image' ||
@@ -110,7 +110,7 @@ pipeline {
 
         stage('Main Plan') {
             when {
-                expressions {
+                expression {
                     params.action == 'default' ||
                     params.action == 'main_plan'
                 }
@@ -128,7 +128,7 @@ pipeline {
 
         stage('Main Refresh') {
             when {
-                expressions {
+                expression {
                     params.action == 'main_refresh'
                 }
             }
@@ -144,7 +144,7 @@ pipeline {
 
         stage('Main Destroy') {
             when {
-                expressions {
+                expression {
                     params.action == 'main_destroy'
                 }
             }
@@ -160,7 +160,7 @@ pipeline {
 
         stage('Main Approve') {
             when {
-                expressions {
+                expression {
                     params.action == 'default' ||
                     params.action == 'main_plan' ||
                     params.action == 'main_refresh' ||
@@ -181,7 +181,7 @@ pipeline {
 
         stage('Main Apply') {
             when {
-                expressions {
+                expression {
                     params.action == 'default' ||
                     params.action == 'main_plan' ||
                     params.action == 'main_refresh' ||
