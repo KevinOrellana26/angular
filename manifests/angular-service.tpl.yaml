@@ -5,10 +5,11 @@ metadata:
   name: angular
   labels:
     app: angular
-  spec:
-    ports:
-    - port: 4500
-      name: angular
-    clusterIP: None
-    selector:
-      app: angular
+spec:
+  selector:
+    app: angular
+  ports:
+    - protocol: TCP
+      port: 4500
+      targetPort: 4500
+  type: NodePort
