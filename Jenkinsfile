@@ -20,6 +20,10 @@ pipeline {
         )
 
         booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generation plan?')
+        string(name: 'SECRET_NAME', defaultValue: params.SECRET_NAME ?: 'kevin-key-sa', description: 'AWS Secret')
+
+        string(name: 'AWS_REGION', defaultValue: params.AWS_REGION ?: 'eu-central-1', description: 'AWS Region')
+        string(name: 'EKS_CLUSTER_NAME', defaultValue: params.EKS_CLUSTER_NAME ?: 'infra-syndeno', description: 'Cluster Name (must be a domain)')
 
         string(name: 'ANGULAR_NAMESPACE', defaultValue: params.ANGULAR_NAMESPACE ?: 'aplicaciones_comunes', description: 'Namespace for Angular')
         string(name: 'ANGULAR_IMAGE', defaultValue: params.ANGULAR_IMAGE ?: 'kevinorellana/angular', description: 'Name image')
@@ -31,11 +35,47 @@ pipeline {
 
         TF_VAR_namespace="${env.ANGULAR_NAMESPACE}"
 
+        TF_VAR_region="${env.AWS_REGION}"
+        TF_VAR_cluster_name="${env.EKS_CLUSTER_NAME}"
+
         TF_VAR_angular_image="${env.ANGULAR_IMAGE}"
         TF_VAR_angular_image_tag="${env.ANGULAR_IMAGE_TAG}"
     }
 
     stages {
+
+        stage('Get AWS Credentials') {
+            when {
+                expressions {
+                    params.action == 'default' ||
+                    params.action == 'update_scm' ||
+                    params.action == 'build_image' ||
+                    params.action == 'main_plan' ||
+                    params.action == 'main_refresh' ||
+                    params.action == 'main_destroy'    
+                }
+            }
+            steps{
+                script{
+                    withCredentials([file(credentialsId: env.SECRET_NAME, variable: 'key')]){
+                        sh """
+                            mkdir -p $WORKSPACE/.aws
+                            mkdir -p $WORKSPACE/.ssh
+                            mkdir -p $WORKSPACE/.kube
+                            chmod 700 $WORKSPACE/.ssh
+
+                            env || sort
+
+                            aws --version
+                            cat ${key}
+                            aws configure import --csv file://${key}
+                            aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+                        """
+                    }
+                }
+            }
+        }
+
         stage('Build Image'){
             when {
                 expressions {

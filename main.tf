@@ -16,6 +16,9 @@ terraform {
 provider "kubernetes" {
 }
 
+provider "aws" {
+}
+
 resource "kubernetes_namespace" "default" {
   metadata {
     name = var.namespace
