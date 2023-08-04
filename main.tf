@@ -3,13 +3,13 @@ variable "namespace" {
   type    = string
 }
 
-variable "angular_image" {
-  type = string
-}
+# variable "angular_image" {
+#   type = string
+# }
 
-variable "angular_image_tag" {
-  type = string
-}
+# variable "angular_image_tag" {
+#   type = string
+# }
 
 ///////////////////////////// Provider
 terraform {
@@ -75,7 +75,7 @@ resource "kubernetes_stateful_set" "angular" {
         }
         container {
           name  = "angular"
-          image = "${var.angular_image}:${var.angular_image_tag}"
+          image = "kevinorellana/angular:v1"
           port {
             container_port = 4500
           }
