@@ -76,7 +76,9 @@ pipeline {
             }
         }
 
-        stage('Build Image'){
+        stage('Build Image'){ // no funciona, no puedo acceder a Docker desde aquí
+                                // Otra forma sería subirlo al ECR y desde ahi crear
+                                // O desde e repo de docker me bajo la imagen que previamente he subido.
             when {
                 expression {
                     params.action == 'build_image'
