@@ -25,7 +25,7 @@ pipeline {
         string(name: 'AWS_REGION', defaultValue: params.AWS_REGION ?: 'eu-central-1', description: 'AWS Region')
         string(name: 'EKS_CLUSTER_NAME', defaultValue: params.EKS_CLUSTER_NAME ?: 'infra-syndeno', description: 'Cluster Name (must be a domain)')
 
-        string(name: 'ANGULAR_NAMESPACE', defaultValue: params.ANGULAR_NAMESPACE ?: 'aplicaciones_comunes', description: 'Namespace for Angular')
+        string(name: 'ANGULAR_NAMESPACE', defaultValue: params.ANGULAR_NAMESPACE ?: 'aplicaciones-comunes', description: 'Namespace for Angular')
         string(name: 'ANGULAR_IMAGE', defaultValue: params.ANGULAR_IMAGE ?: 'kevinorellana/angular', description: 'Name image')
         string(name: 'ANGULAR_IMAGE_TAG', defaultValue: params.ANGULAR_IMAGE_TAG ?: 'v1', description: 'Tag image')
     }
