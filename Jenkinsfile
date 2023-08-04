@@ -10,7 +10,6 @@ pipeline {
             choices: [
                 'default',
                 'update_scm',
-                'delete_namespace',
                 'build_image',
                 'main_plan',
                 'main_refresh',
@@ -26,7 +25,7 @@ pipeline {
         string(name: 'AWS_REGION', defaultValue: params.AWS_REGION ?: 'eu-central-1', description: 'AWS Region')
         string(name: 'EKS_CLUSTER_NAME', defaultValue: params.EKS_CLUSTER_NAME ?: 'infra-syndeno', description: 'Cluster Name (must be a domain)')
 
-        string(name: 'ANGULAR_NAMESPACE', defaultValue: params.ANGULAR_NAMESPACE ?: 'aplicaciones-comunes', description: 'Namespace for Angular')
+        string(name: 'ANGULAR_NAMESPACE', defaultValue: params.ANGULAR_NAMESPACE ?: 'angular', description: 'Namespace for Angular')
         string(name: 'ANGULAR_IMAGE', defaultValue: params.ANGULAR_IMAGE ?: 'kevinorellana/angular', description: 'Name image')
         string(name: 'ANGULAR_IMAGE_TAG', defaultValue: params.ANGULAR_IMAGE_TAG ?: 'v1', description: 'Tag image')
     }
@@ -73,22 +72,6 @@ pipeline {
                             aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
                         """
                     }
-                }
-            }
-        }
-
-        stage('Delete Namespace') {
-            when {
-                expression {
-                    params.action == 'delete_namespace'
-                }
-            }
-            steps {
-                script {
-                    sh(returnStdout: false, returnStatus:true, script: """#!/bin/bash
-                        terraform plan -destroy namespace.tf -input=false -lock=false -out tfplan && \
-                        terraform show -no-color tfplan > tfplan.txt
-                    """.stripIndent())
                 }
             }
         }
@@ -180,7 +163,6 @@ pipeline {
                 expression {
                     params.action == 'default' ||
                     params.action == 'main_plan' ||
-                    params.action == 'delete_namespace' ||
                     params.action == 'main_refresh' ||
                     params.action == 'main_destroy'
                 }
@@ -203,7 +185,6 @@ pipeline {
                     params.action == 'default' ||
                     params.action == 'main_plan' ||
                     params.action == 'main_refresh' ||
-                    params.action == 'delete_namespace' ||
                     params.action == 'main_destroy'
                 }
             }
