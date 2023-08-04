@@ -79,7 +79,7 @@ pipeline {
         stage('Build Image'){
             when {
                 expression {
-                    params.action == 'pull_images'
+                    params.action == 'build_image'
                 }
             }
             steps {
