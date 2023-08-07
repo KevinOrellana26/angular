@@ -11,4 +11,4 @@ RUN npm install -g @angular/cli
 RUN ng new hello-world --interactive=false
 WORKDIR /hello-world
 EXPOSE 4500
-CMD [ "ng", "serve", "--host", "0.0.0.0", "--port", "4500" ]
+CMD [ "ng", "serve", "--host", "0.0.0.0", "--port", "4500", "--disable-host-check"]
