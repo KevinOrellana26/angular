@@ -143,8 +143,6 @@ pipeline {
                 expression {
                     params.action == 'default' ||
                     params.action == 'update_scm' ||
-                    params.action == 'create_namespace' ||
-                    params.action == 'delete_namespace' ||
                     params.action == 'build_image' ||
                     params.action == 'main_plan' ||
                     params.action == 'main_refresh' ||
