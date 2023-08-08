@@ -10,8 +10,6 @@ pipeline {
             choices: [
                 'default',
                 'update_scm',
-                'create_namespace',
-                'delete_namespace',
                 'build_image',
                 'main_plan',
                 'main_refresh',
@@ -75,51 +73,6 @@ pipeline {
                         """
                     }
                 }
-            }
-        }
-
-        stage('Namespace Init') {
-            when {
-                expression {
-                    params.action == 'create_namespace' ||
-                    params.action == 'delete_namespace' 
-                }
-            }
-            steps {
-                sh(returnStdout: false, returnStatus:true, script: """#!/bin/bash
-                    terraform version
-                    terraform init -target=namespace.tf -reconfigure
-                """)
-            }
-        }
-
-        stage('Create Namespace') {
-            when {
-                expression {
-                    params.action == 'create_namespace'
-                }
-            }
-            steps{
-                sh(returnStdout: false, returnStatus:true, script: """#!/bin/bash
-                    env | sort
-                    terraform plan -target=namespace.tf -input=false -lock=false -out tfplan && \
-                    terraform show -no-color tfplan > tfplan.txt
-                """.stripIndent())
-            }
-        }
-
-        stage('Delete Namespace') {
-            when {
-                expression {
-                    params.action == 'delete_namespace'
-                }
-            }
-            steps{
-                sh(returnStdout: false, returnStatus:true, script: """#!/bin/bash
-                    env | sort
-                    terraform plan -target=namespace.tf -destroy -input=false -lock=false -out tfplan && \
-                    terraform show -no-color tfplan > tfplan.txt
-                """.stripIndent())
             }
         }
 
@@ -211,8 +164,6 @@ pipeline {
             when {
                 expression {
                     params.action == 'default' ||
-                    params.action == 'create_namespace' ||
-                    params.action == 'delete_namespace' ||
                     params.action == 'main_plan' ||
                     params.action == 'main_refresh' ||
                     params.action == 'main_destroy'
@@ -234,8 +185,6 @@ pipeline {
             when {
                 expression {
                     params.action == 'default' ||
-                    params.action == 'create_namespace' ||
-                    params.action == 'delete_namespace' ||
                     params.action == 'main_plan' ||
                     params.action == 'main_refresh' ||
                     params.action == 'main_destroy'

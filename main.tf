@@ -1,4 +1,7 @@
-
+variable "namespace" {
+  default = "aplicaciones-comunes"
+  type    = string
+}
 # variable "angular_image" {
 #   type = string
 # }
@@ -23,6 +26,11 @@ provider "kubernetes" {
 provider "aws" {
 }
 
+resource "kubernetes_namespace" "default" {
+  metadata {
+    name = var.namespace
+  }
+}
 
 # resource "kubernetes_manifest" "angular-pvc" {
 #   depends_on = [
