@@ -10,6 +10,8 @@ pipeline {
             choices: [
                 'default',
                 'update_scm',
+                'create_namespace',
+                'delete_namespace',
                 'build_image',
                 'main_plan',
                 'main_refresh',
@@ -20,12 +22,12 @@ pipeline {
         )
 
         booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generation plan?')
-        string(name: 'SECRET_NAME', defaultValue: params.SECRET_NAME ?: 'kevin-key-sa', description: 'AWS Secret')
+        string(name: 'SECRET_NAME', defaultValue: params.SECRET_NAME ?: 'upgrade-ci-key', description: 'AWS Secret')
 
-        string(name: 'AWS_REGION', defaultValue: params.AWS_REGION ?: 'eu-central-1', description: 'AWS Region')
-        string(name: 'EKS_CLUSTER_NAME', defaultValue: params.EKS_CLUSTER_NAME ?: 'infra-syndeno', description: 'Cluster Name (must be a domain)')
+        string(name: 'AWS_REGION', defaultValue: params.AWS_REGION ?: 'eu-west-3', description: 'AWS Region')
+        string(name: 'EKS_CLUSTER_NAME', defaultValue: params.EKS_CLUSTER_NAME ?: 'syndeno', description: 'Cluster Name (must be a domain)')
 
-        string(name: 'ANGULAR_NAMESPACE', defaultValue: params.ANGULAR_NAMESPACE ?: 'angular', description: 'Namespace for Angular')
+        string(name: 'ANGULAR_NAMESPACE', defaultValue: params.ANGULAR_NAMESPACE ?: 'aplicaciones-comunes', description: 'Namespace for Angular')
         string(name: 'ANGULAR_IMAGE', defaultValue: params.ANGULAR_IMAGE ?: 'kevinorellana/angular', description: 'Name image')
         string(name: 'ANGULAR_IMAGE_TAG', defaultValue: params.ANGULAR_IMAGE_TAG ?: 'v1', description: 'Tag image')
     }
@@ -76,6 +78,36 @@ pipeline {
             }
         }
 
+        stage('Create Namespace') {
+            when {
+                expression {
+                    params.action == 'create_namespace'
+                }
+            }
+            steps{
+                sh(returnStdout: false, returnStatus:true, script: """#!/bin/bash
+                    env | sort
+                    terraform plan -target=namespace.tf -input=false -lock=false -out tfplan && \
+                    terraform show -no-color tfplan > tfplan.txt
+                """.stripIndent())
+            }
+        }
+
+        stage('Delete Namespace') {
+            when {
+                expression {
+                    params.action == 'delete_namespace'
+                }
+            }
+            steps{
+                sh(returnStdout: false, returnStatus:true, script: """#!/bin/bash
+                    env | sort
+                    terraform plan -target=namespace.tf -destroy -input=false -lock=false -out tfplan && \
+                    terraform show -no-color tfplan > tfplan.txt
+                """.stripIndent())
+            }
+        }
+
         stage('Build Image'){ // no funciona, no puedo acceder a Docker desde aquí
                                 // Otra forma sería subirlo al ECR y desde ahi crear
                                 // O desde e repo de docker me bajo la imagen que previamente he subido.
@@ -96,6 +128,8 @@ pipeline {
                 expression {
                     params.action == 'default' ||
                     params.action == 'update_scm' ||
+                    params.action == 'create_namespace' ||
+                    params.action == 'delete_namespace' ||
                     params.action == 'build_image' ||
                     params.action == 'main_plan' ||
                     params.action == 'main_refresh' ||
@@ -164,6 +198,8 @@ pipeline {
             when {
                 expression {
                     params.action == 'default' ||
+                    params.action == 'create_namespace' ||
+                    params.action == 'delete_namespace' ||
                     params.action == 'main_plan' ||
                     params.action == 'main_refresh' ||
                     params.action == 'main_destroy'
@@ -185,6 +221,8 @@ pipeline {
             when {
                 expression {
                     params.action == 'default' ||
+                    params.action == 'create_namespace' ||
+                    params.action == 'delete_namespace' ||
                     params.action == 'main_plan' ||
                     params.action == 'main_refresh' ||
                     params.action == 'main_destroy'
