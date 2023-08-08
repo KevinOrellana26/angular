@@ -21,3 +21,6 @@ spec:
             name: angular
             port:
               number: 4500
+  tls:
+  - hosts: ["angular.plt.ko.syndeno.net"]
+    secretName: "angular.plt.ko.syndeno.net"    
