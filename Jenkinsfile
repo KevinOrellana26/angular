@@ -78,6 +78,21 @@ pipeline {
             }
         }
 
+        stage('Namespace Init') {
+            when {
+                expression {
+                    params.action == 'create_namespace' ||
+                    params.action == 'delete_namespace' 
+                }
+            }
+            steps {
+                sh(returnStdout: false, returnStatus:true, script: """#!/bin/bash
+                    terraform version
+                    terraform init -target=namespace.tf -reconfigure
+                """)
+            }
+        }
+
         stage('Create Namespace') {
             when {
                 expression {
