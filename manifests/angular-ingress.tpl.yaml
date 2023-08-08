@@ -14,7 +14,7 @@ spec:
   - host: "angular.plt.ko.syndeno.net"
     http:
       paths:
-      - path: /
+      - path: "/"
         pathType: Prefix
         backend:
           service:
